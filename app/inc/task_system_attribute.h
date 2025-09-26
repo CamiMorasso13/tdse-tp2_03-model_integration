@@ -91,7 +91,13 @@ typedef enum task_system_ev {EV_SYS_IDLE,
 							 EV_SYS_MANUAL_BTN,
 							 EV_SYS_NOT_MANUAL_BTN,
 							 EV_SYS_IR_PHO_CELL,
-							 EV_SYS_NOT_IR_PHO_CELL} task_system_ev_t;
+							 EV_SYS_NOT_IR_PHO_CELL,
+							 EV_LED_01_BLINK,
+							 EV_LED_01_ON,
+							 EV_LED_01_OFF,
+							 EV_LED_02_BLINK,
+							 EV_LED_02_ON,
+							 EV_LED_02_OFF} task_system_ev_t;
 
 /* State of Task System */
 typedef enum task_system_st {ST_SYS_IDLE,
