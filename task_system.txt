@@ -1,10 +1,37 @@
-  task_system.c (task_system.h, task_system_attribute.h)
-   Non-Blocking & Update By Time Code -> System Modeling
+-task_system_attribute.h
 
-  task_system_interface.c (task_system_interface.h)
-   Non-Blocking Code
+Define los atributos del sistema de tareas, principalmente para modelar un autómata de estados finitos (FSM, Finite State Machine).
+En typedef enum task_system_ev define los eventos del sistema
+               EV_SYS_IDLE,
+							 EV_SYS_LOOP_DET,
+							 EV_SYS_NOT_LOOP_DET,
+							 EV_SYS_MANUAL_BTN,
+							 EV_SYS_NOT_MANUAL_BTN,
+							 EV_SYS_IR_PHO_CELL,
+							 EV_SYS_NOT_IR_PHO_CELL
+En typedef enum task_system_st se definen los estados del sistema 
+               ST_SYS_IDLE,
+							 ST_SYS_ACTIVE_01,
+							 ST_SYS_ACTIVE_02,
+							 ST_SYS_ACTIVE_03,
+							 ST_SYS_ACTIVE_04,
+							 ST_SYS_ACTIVE_05,
+							 ST_SYS_ACTIVE_06
 
-...
+En typedef struct se definen los tipos de datos
+	uint32_t: tick
+	task_system_st_t: state
+	task_system_ev_t: event
+	bool: flag
+
+-task_system_interface.h
+
+Inicializa la cola de eventos con init_queue_event_task_system
+Agrega un evento a la cola con put_event_task_system
+Obtiene el próximo evento en la cola con get_event_task_system
+Analiza si hay eventos pendientes en la cola con any_event_task_system
+
+-------------------------------------------------------------------------------------------------------------------------
 task_system.png
 
 Maquina de sistema que modela el comportamiento de una barrera, implementada en itemis CREATE.
@@ -60,4 +87,5 @@ El WCET de cada tarea se pone en cero.
 Cada vez que se ejecuta una tarea, se mide cuánto tardó en ese ciclo utilizando cycle_counter_time_us.
 Si ese tiempo supera al WCET guardado, se actualiza y si es menor o igual, el WCET no cambia.
 Cada WCET (de task_tda_list[x]) comienza en 0.
+
 
