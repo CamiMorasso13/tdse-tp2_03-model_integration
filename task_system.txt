@@ -1,3 +1,27 @@
+- task_system.c
+Representa el controlador lógico central que define las secuencias del sistema.
+
+Constantes y macros:
+ G_TASK_SYS_CNT_INI	         0ul	Valor inicial del contador de ejecución del sistema.
+ G_TASK_SYS_TICK_CNT_INI     0ul	Valor inicial del contador de ticks (tiempo).
+ DEL_SYS_MIN	             0ul	Tiempo mínimo (base de temporización).
+ DEL_SYS_MED	             50ul	Tiempo medio de retardo.
+ DEL_SYS_MAX	             500ul	Tiempo máximo de retardo.
+Controlan los tiempos de espera entre estados, equivalentes a delays no bloqueantes, implementados con decrementos de ticks.
+
+Estructuras:
+task_system_dta -> actúa como la memoria de estado de la máquina de estados del sistema.
+
+Variables globales:
+g_task_system_cnt	             uint32_t	Contador global de ciclos de ejecución.
+g_task_system_tick_cnt	volatile uint32_t	Contador global de ticks (tiempo base), modificado por interrupciones.
+
+Funciones principales
+	task_system_init(void *parameters) -> Inicializa el estado interno del sistema y sus variables. Muestra mensajes informativos con LOGGER_INFO. Inicializa la cola de eventos (init_queue_event_task_system()). Configura el estado inicial. Inicializa los contadores y estructuras (g_task_system_cnt, task_system_dta).
+	task_system_update(void *parameters) -> Actualiza el estado del sistema de forma periódica (no bloqueante). Decrementa el tick global. Esta función procesa los eventos y actualiza el estado de la FSM. Permite ejecutar lógica en función del tiempo sin detener el CPU.
+	task_system_statechart(void) - > Implementa la máquina de estados finita (FSM) del sistema. Es la función núcleo lógico del módulo.
+
+------------------------------------------------------------------------------------------------------------------------------
 -task_system_attribute.h
 
 Define los atributos del sistema de tareas, principalmente para modelar un autómata de estados finitos (FSM, Finite State Machine).
@@ -72,7 +96,8 @@ tick: entero que actúa como contador/temporizador.
 Constantes: DEL_SYS_MAX, DEL_SYS_MIN: límites de tiempo configurados (#define o const uint32_t).	
 Eventos: Representados como banderas booleanas o como valores de un enum.
 
-----------------------------------------------------------------------------------------------------------------------------
+____________________________________________________________________________________________________________________________________
+
 Evolucion de g_app_runtime_us
 
 Al iniciar cada ciclo de actualización de la aplicación, g_app_runtime_us se reinicia. Luego, se ejecutan todas las tareas.
@@ -80,6 +105,7 @@ Para cada tarea se mide el tiempo de ejecución real en microsegundos usando el 
 Ese tiempo se acumula en g_app_runtime_us.
 Al terminar el ciclo, g_app_runtime_us contiene el tiempo total de CPU consumido por todas las tareas en esa iteración.
 En el siguiente ciclo de app_update(), el proceso se repite: se reinicia y vuelve a calcularse.
+Comienza en Value = 0 y termina en Value = 20. Al presionar el botón baja a Value = 19 y al soltarlo sube a 20. 
 
 Evolucion WCET
 
@@ -87,5 +113,9 @@ El WCET de cada tarea se pone en cero.
 Cada vez que se ejecuta una tarea, se mide cuánto tardó en ese ciclo utilizando cycle_counter_time_us.
 Si ese tiempo supera al WCET guardado, se actualiza y si es menor o igual, el WCET no cambia.
 Cada WCET (de task_tda_list[x]) comienza en 0.
+- WCET del [0] cambia a 12
+- WCET del [1] cambia a 4
+- WCET del [2] cambia a 4
+Luego, al presionar el botón cambian a 14, 7, 5, respectivamente.
 
 
